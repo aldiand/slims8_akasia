@@ -4,6 +4,7 @@
  * Member Area/Information
  * Copyright (C) 2009  Arie Nugraha (dicarve@yahoo.com)
  * Patched by Hendro Wicaksono (hendrowicaksono@yahoo.com)
+ * Edited by Andre Bahtiar Fauzi (andrebahtiarfauzi@gmail.com)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -602,6 +603,81 @@ if (!$is_member_login) {
     }
     /* Experimental Loan History - end */
 
+    /* Experimental Loan Request */
+    function saveLoanRequest($item_code, $address) {
+        global $dbs;
+        $_str_save_loan_sql = '
+        INSERT INTO `loan_request` 
+        (`loan_request_id`, `item_code`, `member_id`, `address`, `is_confirmed`, `is_send`, `is_rejected`, `confirm_date`, `send_date`, `input_date`, `librarian_note`, `uid`) 
+        VALUES (NULL, \''.$item_code.'\', \''.$dbs->escape_string(trim($_SESSION['mid'])).'\', \''.$address.'\', \'0\', \'0\', \'0\', NULL, NULL, NOW(), \'-\', NULL);
+        ';
+        @$dbs->query($_str_save_loan_sql);
+        if (!$dbs->error) {
+            return true;
+        } else {
+            vardump($dbs);
+            return false;
+        }
+    }
+
+    function showLoanRequest($num_recs_show = 20) {
+        global $dbs;
+
+        // table spec
+        $_table_spec = 'loan_request AS l
+            LEFT JOIN member AS m ON l.member_id=m.member_id
+            LEFT JOIN item AS i ON l.item_code=i.item_code
+            LEFT JOIN biblio AS b ON i.biblio_id=b.biblio_id';
+
+        // create datagrid
+        $_loan_hist = new simbio_datagrid();
+        $_loan_hist->disable_paging = true;
+        $_loan_hist->invisible_fields = array(3,4,5);
+        $_loan_hist->table_ID = 'loanreq';
+        $_loan_hist->setSQLColumn('l.item_code AS \''.__('Item Code').'\'',
+            'b.title AS \''.__('Title').'\'',
+            'l.address AS \''.__('Address').'\'',
+            'l.is_confirmed AS \''.__('Status').'\'',
+            'l.is_rejected AS \''.__('Status').'\'',
+            'l.is_send AS \''.__('Status').'\'',
+            'l.input_date AS \''.__('Input Date').'\'',
+            'l.librarian_note AS \''.__('Note').'\'');
+        $_loan_hist->setSQLorder('l.input_date DESC');
+        $_criteria = sprintf('m.member_id=\'%s\'', $_SESSION['mid']);
+        $_loan_hist->setSQLCriteria($_criteria);
+
+        // modify column value
+        $_loan_hist->modifyColumnContent(7, 'callback{showRequestStatus}');
+        // set table and table header attributes
+        $_loan_hist->table_attr = 'align="center" class="memberLoanList" cellpadding="5" cellspacing="0"';
+        $_loan_hist->table_header_attr = 'class="dataListHeader" style="font-weight: bold;"';
+        $_loan_hist->using_AJAX = false;
+        // return the result
+        $_result = $_loan_hist->createDataGrid($dbs, $_table_spec, $num_recs_show);
+        $_result = '<div class="memberLoanHistInfo"> &nbsp;'.$_loan_hist->num_rows.' '.__('item(s) loan history').' | <a href="?p=download_loan_history">' . __('Download All Loan History') . '</a></div>'."\n".$_result;
+        return $_result;
+    }
+
+    /* Request Status Callback */
+    function showRequestStatus($obj_db, $array_data) {
+        if($array_data[3] == 0 AND $array_data[4] == 0) {
+            return '<strong style="color: #ffc81e;">UNCONFIRMED</strong>';
+        }
+        else if($array_data[3] == 0 AND $array_data[4] == 1) {
+            return '<strong style="color: #f00;">REJECTED</strong>';
+        }
+        else if($array_data[3] == 1 AND $array_data[5] == 0) {
+            return '<strong style="color: #0032ff;">CONFIRMED</strong>';
+        }
+        else if($array_data[3] == 1 AND $array_data[5] == 1) {
+            return '<strong style="color: #00ff12;">BOOK SENT</strong>';
+        }
+        return 'hehe';
+    }
+    /* Experimental Loan Request - end*/
+
+
+
     // if there is change password request
     if (isset($_POST['changePass']) && $sysconf['auth']['member']['method'] == 'native') {
         $change_pass = procChangePassword($_POST['currPass'], $_POST['newPass'], $_POST['newPass2']);
@@ -671,6 +747,15 @@ if (!$is_member_login) {
         $_SESSION['m_mark_biblio'] = array();
     }
 
+    // loan request on submit
+    if (isset($_POST['SaveLoanRequest'])) {
+        if(isset($_GET['id']) AND !empty($_GET['id'])) {
+            if(isset($_POST['address']) AND !empty($_POST['address'])){
+                saveLoanRequest($_GET['id'], $_POST['address']);
+            }
+        }
+    }
+
     // show all
 	echo '<div class="tagline">';
     echo '<div class="memberInfoHead">'.__('Member Detail').'</div>'."\n";
@@ -688,6 +773,10 @@ if (!$is_member_login) {
     echo '<div class="memberInfoHead">'.__('Your Loan History').'</div>'."\n";
     echo '</div>';
     echo showLoanHist();
+	echo '<div class="tagline">';
+    echo '<div class="memberInfoHead">'.__('Your Loan Request').'</div>'."\n";
+    echo '</div>';
+    echo showLoanRequest();
     echo '</div>';
 
     // default is to show the title basket

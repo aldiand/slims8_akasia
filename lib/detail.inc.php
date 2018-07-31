@@ -189,6 +189,10 @@ class detail
         $loan_stat_q = $this->db->query('SELECT due_date FROM loan AS l
             LEFT JOIN item AS i ON l.item_code=i.item_code
             WHERE l.item_code=\''.$copy_d['item_code'].'\' AND is_lent=1 AND is_return=0');
+        // check if this collection is on reserve
+          $loan_req = $this->db->query('SELECT input_date FROM loan_request AS l
+            LEFT JOIN item AS i ON l.item_code=i.item_code
+            WHERE l.item_code=\''.$copy_d['item_code'].'\' AND is_confirmed=0 AND is_rejected=0');
         $_output .= '<tr>';
         $_output .= '<td class="biblio-item-code">'.$copy_d['item_code'].'</td>';
         $_output .= '<td class="biblio-call-number">'.$copy_d['call_number'].'</td>';
@@ -198,6 +202,9 @@ class detail
         }
         $_output .= '</td>';
         $_output .= '<td width="30%">';
+        if ($loan_req->num_rows > 0) {
+            $_output .= '<b style="background-color: #f00; color: white; padding: 3px;">'.__('Reserved').'</b>'; //mfc
+        }
         if ($loan_stat_q->num_rows > 0) {
             $loan_stat_d = $loan_stat_q->fetch_row();
             $_output .= '<b style="background-color: #f00; color: white; padding: 3px;">'.__('Currently On Loan (Due on').date($sysconf['date_format'], strtotime($loan_stat_d[0])).')</b>'; //mfc
@@ -205,6 +212,8 @@ class detail
             $_output .= '<b style="background-color: #f00; color: white; padding: 3px;">'.__('Available but not for loan').' - '.$copy_d['item_status_name'].'</b>';
         } else {
             $_output .= '<b style="background-color: #5bc0de; color: white; padding: 3px;">'.__('Available').(trim($copy_d['item_status_name'])?' - '.$copy_d['item_status_name']:'').'</b>';
+            $_is_member_logged_in = utility::isMemberLogin();
+            if ($_is_member_logged_in) $_output .= $this->loan_request($copy_d['item_code']);
         }
         $loan_stat_q->free_result();
         $_output .= '</td>';
@@ -937,5 +946,25 @@ class detail
         } else {
             $xmlwriter->text($data);
         }
+    }
+
+    private function loan_request($item_code) {
+        $content = '';
+        // Add button
+        $button = ' - <a class="loan" href="'.SWB.'direct.php?p=loan_request&id='.$item_code.'" title="Loan Request"><b style="background-color: #00de2e; color: white; padding: 3px;">' .__('Loan Request').(trim($copy_d['item_status_name'])?' - '.$copy_d['item_status_name']:'').'</b></a>';
+        $content .= $button;
+
+        // Add script
+        $script = "
+            <script>
+                $(document).ready(function(){
+                    $('.loan').colorbox({
+                        onLoad:function(){ $('#cboxContent').css('min-height', 0); },
+                    });
+                });
+            </script>
+        ";
+        $content .= $script;
+        return $content;
     }
 }
