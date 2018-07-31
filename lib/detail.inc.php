@@ -193,6 +193,7 @@ class detail
           $loan_req = $this->db->query('SELECT input_date FROM loan_request AS l
             LEFT JOIN item AS i ON l.item_code=i.item_code
             WHERE l.item_code=\''.$copy_d['item_code'].'\' AND is_confirmed=0 AND is_rejected=0');
+          $loan_req = $this->db->query('SELECT item_code FROM loan_request WHERE item_code=\''.$copy_d['item_code'].'\' AND ((is_confirmed=0 AND is_rejected=0) OR (is_confirmed=1 AND is_send=0))');
         $_output .= '<tr>';
         $_output .= '<td class="biblio-item-code">'.$copy_d['item_code'].'</td>';
         $_output .= '<td class="biblio-call-number">'.$copy_d['call_number'].'</td>';
@@ -204,8 +205,7 @@ class detail
         $_output .= '<td width="30%">';
         if ($loan_req->num_rows > 0) {
             $_output .= '<b style="background-color: #f00; color: white; padding: 3px;">'.__('Reserved').'</b>'; //mfc
-        }
-        if ($loan_stat_q->num_rows > 0) {
+        } else if ($loan_stat_q->num_rows > 0) {
             $loan_stat_d = $loan_stat_q->fetch_row();
             $_output .= '<b style="background-color: #f00; color: white; padding: 3px;">'.__('Currently On Loan (Due on').date($sysconf['date_format'], strtotime($loan_stat_d[0])).')</b>'; //mfc
         } else if ($copy_d['no_loan']) {

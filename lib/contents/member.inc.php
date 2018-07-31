@@ -606,6 +606,10 @@ if (!$is_member_login) {
     /* Experimental Loan Request */
     function saveLoanRequest($item_code, $address) {
         global $dbs;
+        $_str_select_req = 'SELECT item_code FROM loan_request WHERE item_code=\''.$item_code.'\'  AND ((is_confirmed=0 AND is_rejected=0) OR (is_confirmed=1 AND is_send=0))';
+        $_loan_req_q = $dbs->query($_str_select_req);
+        if ($_loan_req_q->num_rows > 0) return false;
+
         $_str_save_loan_sql = '
         INSERT INTO `loan_request` 
         (`loan_request_id`, `item_code`, `member_id`, `address`, `is_confirmed`, `is_send`, `is_rejected`, `confirm_date`, `send_date`, `input_date`, `librarian_note`, `uid`) 
@@ -615,7 +619,6 @@ if (!$is_member_login) {
         if (!$dbs->error) {
             return true;
         } else {
-            vardump($dbs);
             return false;
         }
     }
@@ -640,7 +643,7 @@ if (!$is_member_login) {
             'l.is_confirmed AS \''.__('Status').'\'',
             'l.is_rejected AS \''.__('Status').'\'',
             'l.is_send AS \''.__('Status').'\'',
-            'l.input_date AS \''.__('Input Date').'\'',
+            'date(l.input_date) AS \''.__('Input Date').'\'',
             'l.librarian_note AS \''.__('Note').'\'');
         $_loan_hist->setSQLorder('l.input_date DESC');
         $_criteria = sprintf('m.member_id=\'%s\'', $_SESSION['mid']);
@@ -654,7 +657,7 @@ if (!$is_member_login) {
         $_loan_hist->using_AJAX = false;
         // return the result
         $_result = $_loan_hist->createDataGrid($dbs, $_table_spec, $num_recs_show);
-        $_result = '<div class="memberLoanHistInfo"> &nbsp;'.$_loan_hist->num_rows.' '.__('item(s) loan history').' | <a href="?p=download_loan_history">' . __('Download All Loan History') . '</a></div>'."\n".$_result;
+        $_result = '<div class="memberLoanHistInfo"> &nbsp;'.$_loan_hist->num_rows.' '.__('item(s) loan history').' | <a href="?p=download_loan_request">' . __('Download All Loan Request') . '</a></div>'."\n".$_result;
         return $_result;
     }
 
