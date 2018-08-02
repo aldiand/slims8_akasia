@@ -30,3 +30,4 @@ $menu[] = array(__('Loan Rules'), MWB.'circulation/loan_rules.php', __('View and
 $menu[] = array(__('Loan History'), MWB.'reporting/customs/loan_history.php', __('Loan History Overview'));
 $menu[] = array(__('Overdued List'), MWB.'reporting/customs/overdued_list.php', __('View Members Having Overdues'));
 $menu[] = array(__('Reservation'), MWB.'reporting/customs/reserve_list.php', __('Reservation'));
+$menu[] = array(__('Loan Request'), MWB.'loan_request/loan_request.php', __('Loan Request'));
