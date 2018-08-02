@@ -236,7 +236,7 @@ if (!$reportView) {
         'l.loan_request_id AS \''.__('Id').'\'');
     $reportgrid->setSQLorder('l.input_date DESC');
 
-    $criteria = 'WHERE 1=1';
+    $criteria = '1=1';
     if (isset($_GET['id_name']) AND !empty($_GET['id_name'])) {
         $id_name = $dbs->escape_string($_GET['id_name']);
         $criteria .= ' AND (m.member_id LIKE \'%'.$id_name.'%\' OR m.member_name LIKE \'%'.$id_name.'%\')';
@@ -340,8 +340,11 @@ if (!$reportView) {
         ', m.member_name AS \''.__('Member Name').'\''.
         ', l.item_code AS \''.__('Item Code').'\''.
         ', b.title AS \''.__('Title').'\''.
-        ', l.loan_date AS \''.__('Loan Date').'\''.
-        ', l.due_date AS \''.__('Due Date').'\', l.is_return AS \''.__('Loan Status').'\''.
+        ', l.address AS \''.__('Address').'\''.
+        ', l.input_date AS \''.__('Request Date').'\''.
+        ', l.confirm_date AS \''.__('Confirm Date').'\''.
+        ', l.send_date AS \''.__('Send Date').'\''.
+        ', l.librarian_note AS \''.__('Note').'\''.
 		' FROM '.$table_spec.' WHERE '.$criteria;
 
 		unset($_SESSION['xlsdata']);

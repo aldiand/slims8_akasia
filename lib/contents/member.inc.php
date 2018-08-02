@@ -635,7 +635,7 @@ if (!$is_member_login) {
         // create datagrid
         $_loan_hist = new simbio_datagrid();
         $_loan_hist->disable_paging = true;
-        $_loan_hist->invisible_fields = array(3,4,5);
+        $_loan_hist->invisible_fields = array(1,3,4,5);
         $_loan_hist->table_ID = 'loanreq';
         $_loan_hist->setSQLColumn('l.item_code AS \''.__('Item Code').'\'',
             'b.title AS \''.__('Title').'\'',

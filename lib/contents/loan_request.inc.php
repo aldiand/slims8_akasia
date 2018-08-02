@@ -33,4 +33,4 @@ $_forms .=  simbio_form_element::textField('textarea','address','','placeholder=
 $_forms .= '<input type="submit" name="SaveLoanRequest" value="Submit Loan Request" class="button">';
 $_forms .= '</form>';
 $_forms .= '</div>';
-echo $_list_comment.$_forms;
+echo $_forms;
