@@ -9,3 +9,13 @@ membership, stock taking and many other else.
 
 SLiMS is licensed under GNU GPL version 3. Please read "GPL-3.0 License.txt"
 to learn more about GPL.
+
+
+Added
+======
+- Member Loan Request with address
+
+
+Screenshot
+===========
+Later
