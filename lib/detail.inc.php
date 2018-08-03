@@ -951,7 +951,7 @@ class detail
     private function loan_request($item_code) {
         $content = '';
         // Add button
-        $button = ' - <a class="loan" href="'.SWB.'direct.php?p=loan_request&id='.$item_code.'" title="Loan Request"><b style="background-color: #00de2e; color: white; padding: 3px;">' .__('Loan Request').(trim($copy_d['item_status_name'])?' - '.$copy_d['item_status_name']:'').'</b></a>';
+        $button = ' - <a class="loan" href="'.SWB.'direct.php?p=loan_request&id='.$item_code.'" title="Loan Request"><b style="background-color: #00de2e; color: white; padding: 3px;">' .__('Loan Request').'</b></a>';
         $content .= $button;
 
         // Add script
