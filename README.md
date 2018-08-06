@@ -14,7 +14,12 @@ to learn more about GPL.
 Added
 ======
 - Member Loan Request with address
+- Responsive member page
 
+Todo
+=====
+- Security side
+- Change header
 
 Screenshot
 ===========
