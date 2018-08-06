@@ -474,7 +474,8 @@ if (!$is_member_login) {
     function showMemberDetail()
     {
         // show the member information
-        $_detail = '<table class="memberDetail" cellpadding="5" cellspacing="0">'."\n";
+        $_detail = '<div class="table-container">'."\n";
+        $_detail .= '<table class="memberDetail" cellpadding="5" cellspacing="0">'."\n";
         // member notes and pending information
         if ($_SESSION['m_membership_pending'] || $_SESSION['m_is_expired']) {
             $_detail .= '<tr>'."\n";
@@ -505,6 +506,7 @@ if (!$is_member_login) {
             .'<td class="value alterCell2" colspan="3">'.$_SESSION['m_institution'].'</td>';
         $_detail .= '</tr>'."\n";
         $_detail .= '</table>'."\n";
+        $_detail .= '</div>'."\n";
 
 
         return $_detail;
@@ -635,7 +637,7 @@ if (!$is_member_login) {
         // create datagrid
         $_loan_hist = new simbio_datagrid();
         $_loan_hist->disable_paging = true;
-        $_loan_hist->invisible_fields = array(1,3,4,5);
+        $_loan_hist->invisible_fields = array(0,3,4,5);
         $_loan_hist->table_ID = 'loanreq';
         $_loan_hist->setSQLColumn('l.item_code AS \''.__('Item Code').'\'',
             'b.title AS \''.__('Title').'\'',

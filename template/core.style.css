@@ -143,6 +143,10 @@ form.clock {
     border: 1px solid #999;
 }
 
+.table-container {
+    overflow-x:scroll;
+}
+
 .memberLoanListInfo, .memberDetailInfo, .memberBasketInfo {
     border: 0;
     padding: 3px;
