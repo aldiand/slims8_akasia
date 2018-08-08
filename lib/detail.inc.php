@@ -183,7 +183,7 @@ class detail
       if (!$copies) {
         return false;
       }
-      $_output = '<table class="table table-bordered table-small itemList">';
+      $_output = '<table style="border-collapse:collapse; table-layout:fixed; width:100%;" class="table table-bordered table-small itemList">';
       foreach ($copies as $copy_d) {
         // check if this collection is on loan
         $loan_stat_q = $this->db->query('SELECT due_date FROM loan AS l
@@ -195,7 +195,7 @@ class detail
             WHERE l.item_code=\''.$copy_d['item_code'].'\' AND is_confirmed=0 AND is_rejected=0');
           $loan_req = $this->db->query('SELECT item_code FROM loan_request WHERE item_code=\''.$copy_d['item_code'].'\' AND ((is_confirmed=0 AND is_rejected=0) OR (is_confirmed=1 AND is_send=0))');
         $_output .= '<tr>';
-        $_output .= '<td class="biblio-item-code">'.$copy_d['item_code'].'</td>';
+        $_output .= '<td style="word-wrap: break-word;" class="biblio-item-code">'.$copy_d['item_code'].'</td>';
         $_output .= '<td class="biblio-call-number">'.$copy_d['call_number'].'</td>';
         $_output .= '<td class="biblio-location">'.$copy_d['location_name'];
         if (trim($copy_d['site']) != "") {
