@@ -612,7 +612,7 @@ if (!$is_member_login) {
         $_loan_req_q = $dbs->query($_str_select_req);
         if ($_loan_req_q->num_rows > 0) return false;
 
-        vard_dump(CallAPI('POST', 'https://chatbot.kebanyakan.online/broadcast/line', '{
+        var_dump(CallAPI('POST', 'https://chatbot.kebanyakan.online/broadcast/line', '{
             "type" : "text",
             "message": "hi"
         }'));
