@@ -612,6 +612,11 @@ if (!$is_member_login) {
         $_loan_req_q = $dbs->query($_str_select_req);
         if ($_loan_req_q->num_rows > 0) return false;
 
+        vard_dump(CallAPI('POST', 'https://chatbot.kebanyakan.online/broadcast/line', '{
+            "type" : "text",
+            "message": "hi"
+        }'));
+
         $_str_save_loan_sql = '
         INSERT INTO `loan_request` 
         (`loan_request_id`, `item_code`, `member_id`, `address`, `is_confirmed`, `is_send`, `is_rejected`, `confirm_date`, `send_date`, `input_date`, `librarian_note`, `uid`) 
@@ -623,6 +628,7 @@ if (!$is_member_login) {
         } else {
             return false;
         }
+        
     }
 
     function showLoanRequest($num_recs_show = 20) {
@@ -681,6 +687,35 @@ if (!$is_member_login) {
     }
     /* Experimental Loan Request - end*/
 
+    // Method: POST, PUT, GET etc
+    // Data: array("param" => "value") ==> index.php?param=value
+
+    function CallAPI($method, $url, $data = false)
+    {
+        $curl = curl_init();
+
+        switch ($method)
+        {
+            case "POST":
+                curl_setopt($curl, CURLOPT_POST, 1);
+
+                if ($data)
+                    curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+                break;
+            case "PUT":
+                curl_setopt($curl, CURLOPT_PUT, 1);
+                break;
+            default:
+                if ($data)
+                    $url = sprintf("%s?%s", $url, http_build_query($data));
+        }
+
+        $result = curl_exec($curl);
+
+        curl_close($curl);
+
+        return $result;
+    }
 
 
     // if there is change password request
