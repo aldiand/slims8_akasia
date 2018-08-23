@@ -612,10 +612,10 @@ if (!$is_member_login) {
         $_loan_req_q = $dbs->query($_str_select_req);
         if ($_loan_req_q->num_rows > 0) return false;
 
-        var_dump(CallAPI('POST', 'https://chatbot.kebanyakan.online/broadcast/line', '{
+        CallAPI('POST', 'https://chatbot.kebanyakan.online/broadcast/line', '{
             "type" : "text",
             "message": "hi"
-        }'));
+        }');
 
         $_str_save_loan_sql = '
         INSERT INTO `loan_request` 
@@ -694,25 +694,31 @@ if (!$is_member_login) {
     {
         $curl = curl_init();
 
-        switch ($method)
-        {
-            case "POST":
-                curl_setopt($curl, CURLOPT_POST, 1);
-
-                if ($data)
-                    curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
-                break;
-            case "PUT":
-                curl_setopt($curl, CURLOPT_PUT, 1);
-                break;
-            default:
-                if ($data)
-                    $url = sprintf("%s?%s", $url, http_build_query($data));
-        }
-
-        $result = curl_exec($curl);
-
+        curl_setopt_array($curl, array(
+          CURLOPT_URL => $url,
+          CURLOPT_RETURNTRANSFER => true,
+          CURLOPT_ENCODING => "",
+          CURLOPT_MAXREDIRS => 10,
+          CURLOPT_TIMEOUT => 30,
+          CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+          CURLOPT_CUSTOMREQUEST => $method,
+          CURLOPT_POSTFIELDS => $data,
+          CURLOPT_HTTPHEADER => array(
+            "Cache-Control: no-cache",
+            "Content-Type: application/json"
+          ),
+        ));
+        
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+        
         curl_close($curl);
+        
+        if ($err) {
+          return "cURL Error #:" . $err;
+        } else {
+          return $response;
+        }
 
         return $result;
     }
