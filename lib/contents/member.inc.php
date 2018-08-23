@@ -614,7 +614,7 @@ if (!$is_member_login) {
 
         CallAPI('POST', 'https://chatbot.kebanyakan.online/broadcast/line', '{
             "type" : "text",
-            "message": "hi"
+            "message": "Someone submit a loan request"
         }');
 
         $_str_save_loan_sql = '
